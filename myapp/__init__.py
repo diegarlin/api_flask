@@ -18,7 +18,11 @@ def create_app():
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
-
+    
+    with app.app_context():
+        db.drop_all()  # drop all tables
+        db.create_all()
+        
     app.register_blueprint(main)
 
     return app
