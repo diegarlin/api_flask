@@ -15,6 +15,7 @@ def register():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    deviceID = data.get('deviceID')
 
     # Verificar si el usuario ya existe
     existing_user = User.query.filter_by(username=username).first()
@@ -24,7 +25,7 @@ def register():
     # Creamos el hash y lo almacenamos en la base de datos
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     
-    new_user = User(username=username, password_hash=hashed_password)
+    new_user = User(username=username, password_hash=hashed_password, deviceID=deviceID)
     db.session.add(new_user)
     db.session.commit()
 
@@ -35,10 +36,16 @@ def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    deviceID = data.get('deviceID')
 
     user = User.query.filter_by(username=username).first()
 
     if user and bcrypt.check_password_hash(user.password_hash, password):
+        # Verificar si el deviceID ha cambiado
+        if user.deviceID != deviceID:
+            user.deviceID = deviceID
+            db.session.commit()
+
         # Creamos el token con el cual podrán mandar llamadas a la api
         access_token = create_access_token(identity=username)
         return jsonify(access_token=access_token), 200
