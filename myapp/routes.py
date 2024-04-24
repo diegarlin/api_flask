@@ -27,6 +27,10 @@ def register():
     if existing_device:
         return jsonify({"msg": "El deviceID ya está en uso"}), 400
 
+    # Verificar si la contraseña cumple con los requisitos
+    if not (len(password) >= 6 and any(c.isupper() for c in password) and any(c.islower() for c in password) and any(c.isdigit() for c in password)):
+        return jsonify({"msg": "La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula y un número"}), 400
+
     # Creamos el hash y lo almacenamos en la base de datos
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     
