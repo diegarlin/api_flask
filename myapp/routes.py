@@ -22,6 +22,11 @@ def register():
     if existing_user:
         return jsonify({"msg": "El nombre de usuario ya está en uso"}), 400
 
+    # Verificar si el deviceID ya está en uso
+    existing_device = User.query.filter_by(deviceID=deviceID).first()
+    if existing_device:
+        return jsonify({"msg": "El deviceID ya está en uso"}), 400
+
     # Creamos el hash y lo almacenamos en la base de datos
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     
