@@ -49,17 +49,20 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-    if user and bcrypt.check_password_hash(user.password_hash, password):
-        # Verificar si el deviceID ha cambiado
-        if user.deviceID != deviceID:
-            user.deviceID = deviceID
-            db.session.commit()
+    if user:
+        if bcrypt.check_password_hash(user.password_hash, password):
+            # Verificar si el deviceID ha cambiado
+            if user.deviceID != deviceID:
+                user.deviceID = deviceID
+                db.session.commit()
 
-        # Creamos el token con el cual podrán mandar llamadas a la api
-        access_token = create_access_token(identity=username)
-        return jsonify(access_token=access_token), 200
+            # Creamos el token con el cual podrán mandar llamadas a la api
+            access_token = create_access_token(identity=username)
+            return jsonify(access_token=access_token), 200
+        else:
+            return jsonify({"msg": "Contraseña inválida"}), 401
     else:
-        return jsonify({"msg": "Credenciales inválidas"}), 401
+        return jsonify({"msg": "Usuario inválido"}), 401
 
 # Esta función sirve para ver si funciona tu token
 @main.route('/protected', methods=['GET'])
