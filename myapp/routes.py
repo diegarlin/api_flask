@@ -62,7 +62,7 @@ def register():
 def login():
     data = request.get_json()
 
-    username_or_email = data.get('username_or_email', '').strip()
+    username_or_email = data.get('usernameOrEmail', '').strip()
     password = data.get('password', '').strip()
     deviceID = data.get('deviceID')
 
