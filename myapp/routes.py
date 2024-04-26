@@ -61,30 +61,27 @@ def register():
 @main.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-
-    username_or_email = data.get('usernameOrEmail', '').strip()
-    password = data.get('password', '').strip()
+    username_or_email = data.get('usernameOrEmail').strip()
+    password = data.get('password').strip()
     deviceID = data.get('deviceID')
 
-    if not username_or_email or not password:
-        return jsonify({"msg": "El nombre de usuario/correo electrónico y la contraseña son obligatorios"}), 400
-
     # Verificar si el username_or_email es un nombre de usuario válido
-    user = User.query.filter_by(username=username_or_email).first()
+    user = User.query.filter(User.username.ilike(username_or_email) | User.email.ilike(username_or_email)).first()
 
-    # Si no encontramos un usuario con ese nombre de usuario, intentamos buscar por email
-    if not user:
-        user = User.query.filter_by(email=username_or_email).first()
+    if user:
+        if bcrypt.check_password_hash(user.password_hash, password):
+            # Verificar si el deviceID ha cambiado
+            if user.deviceID != deviceID:
+                user.deviceID = deviceID
+                db.session.commit()
 
-    if not user or not bcrypt.check_password_hash(user.password_hash, password):
-        return jsonify({"msg": "Nombre de usuario/correo electrónico o contraseña incorrectos"}), 401
-
-    # Verificar si el deviceID ha cambiado
-    if user.deviceID != deviceID:
-        user.deviceID = deviceID
-        db.session.commit()
-
-    return jsonify({"msg": "Inicio de sesión exitoso"}), 200
+            # Creamos el token con el cual podrán mandar llamadas a la api
+            access_token = create_access_token(identity=user.username)
+            return jsonify(access_token=access_token), 200
+        else:
+            return jsonify({"msg": "Contraseña inválida"}), 401
+    else:
+        return jsonify({"msg": "Usuario inválido"}), 401
 
 # Esta función sirve para ver si funciona tu token
 @main.route('/protected', methods=['GET'])
