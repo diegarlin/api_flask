@@ -79,7 +79,7 @@ def login():
             access_token = create_access_token(identity=user.username)
             return jsonify(access_token=access_token), 200
         else:
-            return jsonify({"msg": "Contraseña inválida"}), 401
+            return jsonify({"msg": "La contraseña no es correcta"}), 401
     else:
         return jsonify({"msg": "Usuario inválido"}), 401
 
