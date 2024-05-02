@@ -18,7 +18,6 @@ data = {
     }
 
 def post(url, data, headers):
-
     
     try:
         response = requests.post(url, json=data, headers=headers)
@@ -102,28 +101,7 @@ if __name__ == "__main__":
     #     print(f"Poi pois_type: {poi.get('pois_type')}")
     #     print(f"Poi is_published: {poi.get('is_published')}")
 
-    # SEARCH POI
-    # search_poi_data = {
-    #     "cuid": "cuid_6b0a3e34-9997-462c-2dec-7f0e76cce1ca_1708272924486",
-    #     "letters": "Emergencia",
-    #     "buid": BUID,
-    #     "greeklish": "false"
-    # }
-    # data = post(url_base+"/api/mapping/pois/search", search_poi_data, headers)
-
-    # for poi in data['pois']:
-    #     print(f"Poi name: {poi.get('name')}")
-    #     print(f"Poi image: {poi.get('image')}")
-    #     print(f"Poi floor_number: {poi.get('floor_number')}")
-    #     print(f"Poi is_building_entrance: {poi.get('is_building_entrance')}")
-    #     print(f"Poi floor_name: {poi.get('floor_name')}")
-    #     print(f"Poi is_door: {poi.get('is_door')}")
-    #     print(f"Poi puid: {poi.get('puid')}")
-    #     print(f"Poi coordinates_lon: {poi.get('coordinates_lon')}")
-    #     print(f"Poi coordinates_lat: {poi.get('coordinates_lat')}")
-    #     print(f"Poi buid: {poi.get('buid')}")
-    #     print(f"Poi pois_type: {poi.get('pois_type')}")
-    #     print(f"Poi is_published: {poi.get('is_published')}")
+    
 
     # FIND FASTEST ROUTE ENTRE COORDENADAS
     # fastest_route_data = {
@@ -144,20 +122,65 @@ if __name__ == "__main__":
    
     # data = post(url_base+"/api/navigation/route", fastest_route_data, headers)
 
+    # SEARCH POI
     
+    
+    # print(data)
+    # for poi in data['pois']:
+    #     print(f"Poi name: {poi.get('name')}")
+    #     print(f"Poi image: {poi.get('image')}")
+    #     print(f"Poi floor_number: {poi.get('floor_number')}")
+    #     print(f"Poi is_building_entrance: {poi.get('is_building_entrance')}")
+    #     print(f"Poi floor_name: {poi.get('floor_name')}")
+    #     print(f"Poi is_door: {poi.get('is_door')}")
+    #     print(f"Poi puid: {poi.get('puid')}")
+    #     print(f"Poi coordinates_lon: {poi.get('coordinates_lon')}")
+    #     print(f"Poi coordinates_lat: {poi.get('coordinates_lat')}")
+    #     print(f"Poi buid: {poi.get('buid')}")
+    #     print(f"Poi pois_type: {poi.get('pois_type')}")
+    #     print(f"Poi is_published: {poi.get('is_published')}")
+    #     print(f"Poi description: {poi.get('description')}")
+        
+    search_poi_data = {
+        "cuid": "cuid_6b0a3e34-9997-462c-2dec-7f0e76cce1ca_1708272924486",
+        "letters": "A0.12",
+        "buid": BUID,
+        "greeklish": "false"
+    }
+    
+    data = post(url_base+"/api/mapping/pois/search", search_poi_data, headers)
+    
+    pois = data['pois']
+    poi = pois[0]
+    
+    current_number = int(poi.get('description').split(": ")[1])
 
-    # # UPDATE POI
-    # update_poi_data =    {
-    #     "buid": BUID,
-    #     "puid": "poi_c2687321-0e4f-431b-92bd-0f537aff1f74",
-    #     "name": "A0.12"
-    # }
+    # Incrementar el número
+    new_number = current_number + 1
 
-    # data = post(url_base+"/api/auth/mapping/pois/update", update_poi_data, headers)
+    # Actualizar la descripción
+    new_description = "Número de personas: " + str(new_number)
 
-    # # GET POI
-    get_poi_data =    {
-        "pois": "poi_c2687321-0e4f-431b-92bd-0f537aff1f74"
+    # UPDATE POI
+    update_poi_data =    {
+        "buid": BUID,
+        "puid": "poi_9b57957a-332d-43c2-8ddd-4b01fabfc53d",
+        "description": new_description
     }
 
-    data = post(url_base+"/api/navigation/pois/id", get_poi_data, headers)
+    data = post(url_base+"/api/auth/mapping/pois/update", update_poi_data, headers)
+
+    # # GET POI
+    # get_poi_data =    {
+    #     "pois": "poi_c2687321-0e4f-431b-92bd-0f537aff1f74"
+    # }
+
+    # data = post(url_base+"/api/navigation/pois/id", get_poi_data, headers)
+    
+    ## DELETE POI
+    # delete_poi_data = {
+    #     "buid": BUID,
+    #     "puid": "poi_c2687321-0e4f-431b-92bd-0f537aff1f74",
+    #  }
+     
+    # data = post(url_base+"/api/auth/mapping/pois/delete", delete_poi_data, headers)
