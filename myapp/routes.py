@@ -97,7 +97,6 @@ def validate_email(email):
     return re.match(email_regex, email) is not None
 
 @main.route('/comprobar_sala', methods=['POST'])
-@jwt_required()
 def comprobar_sala():
     data = request.get_json()
     room = data.get('room')
