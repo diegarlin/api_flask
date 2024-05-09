@@ -103,7 +103,7 @@ def comprobar_sala():
     deviceID = data.get('deviceID')
 
     # Comprueba si la sala tiene un usuario asociado
-    user = User.query.filter_by(room=room).first()
+    user = User.query.filter_by(despacho=room).first()
     if user:
         # Si la sala tiene un usuario asociado, comprueba el deviceID
         if user.deviceID != deviceID:
