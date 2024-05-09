@@ -108,7 +108,7 @@ def comprobar_sala():
         # Si la sala tiene un usuario asociado, comprueba el deviceID
         if user.deviceID != deviceID:
             print("DeviceID no coincide")
-            admins = User.query.filter_by(is_admin=True).all()
+            admins = User.query.filter_by(admin=True).all()
             for admin in admins:
                 print("Mensajes")
                 msg = Message("Alerta de seguridad",

@@ -25,7 +25,7 @@ def create_app():
     jwt.init_app(app)
     
     with app.app_context():
-        db.drop_all()  # drop all tables
+        # db.drop_all()  # drop all tables
         db.create_all()
         
     app.register_blueprint(main)
