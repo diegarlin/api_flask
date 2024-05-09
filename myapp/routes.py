@@ -107,9 +107,10 @@ def comprobar_sala():
     if user:
         # Si la sala tiene un usuario asociado, comprueba el deviceID
         if user.deviceID != deviceID:
-            # Si los deviceID no coinciden, envía un correo a los administradores
+            print("DeviceID no coincide")
             admins = User.query.filter_by(is_admin=True).all()
             for admin in admins:
+                print("Mensajes")
                 msg = Message("Alerta de seguridad",
                               sender="shar3d.confirmaciones@gmail.com",
                               recipients=[admin.email])
