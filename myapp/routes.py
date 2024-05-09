@@ -4,6 +4,8 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from .extensions import bcrypt
 from .models import User, db
 import re
+from flask_mail import Message
+from .extensions import mail
 
 main = Blueprint('main', __name__)
 
@@ -93,3 +95,26 @@ def protected():
 def validate_email(email):
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(email_regex, email) is not None
+
+@main.route('/comprobar_sala', methods=['POST'])
+@jwt_required()
+def comprobar_sala():
+    data = request.get_json()
+    room = data.get('room')
+    deviceID = data.get('deviceID')
+
+    # Comprueba si la sala tiene un usuario asociado
+    user = User.query.filter_by(room=room).first()
+    if user:
+        # Si la sala tiene un usuario asociado, comprueba el deviceID
+        if user.deviceID != deviceID:
+            # Si los deviceID no coinciden, envía un correo a los administradores
+            admins = User.query.filter_by(is_admin=True).all()
+            for admin in admins:
+                msg = Message("Alerta de seguridad",
+                              sender="shar3d.confirmaciones@gmail.com",
+                              recipients=[admin.email])
+                msg.body = f"El deviceID de la sala {room} no coincide con el registrado."
+                mail.send(msg)
+
+    return jsonify({"msg": "Comprobación de sala realizada"}), 200
