@@ -124,7 +124,10 @@ def comprobar_sala():
 @main.route('/cerrar_entradas', methods=['GET'])
 @jwt_required()
 def registrar_salidas():
-    
+    current_username = get_jwt_identity()
+    current_user = User.query.filter_by(username=current_username).first()
+    if current_user.admin == False:
+        return jsonify({" No tienes permisos para realizar esta acción"}), 401
         
     response = requests.get('https://api-mongo-9eqi.onrender.com/habitaciones/cerrar_entradas')
 
@@ -139,11 +142,15 @@ def send_email():
     
     if not request.is_json:
         return jsonify({"msg": "No hay JSON"}), 400
-
+    
     subject = request.json.get('subject', None)
     body = request.json.get('body', None)
+    current_username = get_jwt_identity()
     
-        
+    current_user = User.query.filter_by(username=current_username).first()
+    if current_user.admin == False:
+        return jsonify({" No tienes permisos para realizar esta acción"}), 401
+    
     if not subject or not body:
         return jsonify({"msg": "Debe haber asunto y mensaje"}), 400
 
