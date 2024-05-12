@@ -185,7 +185,7 @@ def get_users():
 
 @main.route('/users/<int:user_id>', methods=['GET'])
 @jwt_required()
-def update_user(user_id):
+def get_user(user_id):
     
     current_username = get_jwt_identity()
     
