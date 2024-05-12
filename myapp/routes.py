@@ -7,7 +7,7 @@ import re
 from flask_mail import Message
 from .extensions import mail
 import requests
-import logging
+from datetime import datetime
 
 main = Blueprint('main', __name__)
 
@@ -94,30 +94,30 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-def validate_email(email):
-    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    return re.match(email_regex, email) is not None
-
 @main.route('/comprobar_sala', methods=['POST'])
 def comprobar_sala():
     data = request.get_json()
     room = data.get('room')
     deviceID = data.get('deviceID')
+    fechaHora = datetime.strptime(data.get('fechaHora'), "%Y-%m-%dT%H:%M:%S")
 
     # Comprueba si la sala tiene un usuario asociado
     user = User.query.filter_by(despacho=room).first()
-    if user:
+    user_entrada = User.query.filter_by(deviceID=deviceID).first()
+
+    if user is not None:
         # Si la sala tiene un usuario asociado, comprueba el deviceID
-        if user.deviceID != deviceID:
-            print("DeviceID no coincide")
-            admins = User.query.filter_by(admin=True).all()
-            for admin in admins:
-                print("Mensajes")
-                msg = Message("Alerta de seguridad",
-                              sender="shar3d.confirmaciones@gmail.com",
-                              recipients=[admin.email])
-                msg.body = f"El deviceID de la sala {room} no coincide con el registrado."
-                mail.send(msg)
+        if user_entrada is None:
+            if user.deviceID != deviceID:
+                print("DeviceID no coincide")
+                send_alert(body="Se ha detectado un intento de acceso no autorizado en la sala {}".format(room))
+        else:
+            if (user_entrada.admin == False or user_entrada.profesor == False):
+                send_alert(body="Se ha detectado un intento de acceso no autorizado en la sala {}".format(room))
+
+    # Comprueba si la hora es entre las 23 y las 8, si es fin de semana o si es agosto
+    if (fechaHora.hour >= 23 or fechaHora.hour < 8) or fechaHora.weekday() >= 5 or fechaHora.month == 8:
+        send_alert(body="Se ha detectado una entrada en un día u hora no permitidos en la facultad")
 
     return jsonify({"msg": "Comprobación de sala realizada"}), 200
 
@@ -198,3 +198,19 @@ def get_user(user_id):
         return jsonify({'message': 'User not found'}), 404
     
     return jsonify(user.to_dict()), 200
+
+
+def send_alert(body):
+        admins = User.query.filter_by(admin=True).all()
+        for admin in admins:
+            print("Mensajes")
+            msg = Message("Alerta de seguridad",
+                        sender="shar3d.confirmaciones@gmail.com",
+                        recipients=[admin.email])
+            msg.body = body
+            mail.send(msg)
+            
+            
+def validate_email(email):
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(email_regex, email) is not None
