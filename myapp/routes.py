@@ -55,7 +55,7 @@ def register():
     # Creamos el hash y lo almacenamos en la base de datos
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     
-    new_user = User(username=username, password_hash=hashed_password, email=email, deviceID=deviceID)
+    new_user = User(username=username, password_hash=hashed_password, email=email, deviceID=deviceID, admin=False, profesor=False)
     db.session.add(new_user)
     db.session.commit()
 
@@ -124,7 +124,7 @@ def comprobar_sala():
 @jwt_required()
 def registrar_salidas():
     data = request.get_json()
-    response = requests.post('https://api-mongo-9eqi.onrender.com/registrar_salidas', json=data)
+    response = requests.post('https://api-mongo-9eqi.onrender.com/habitaciones/registrar_salidas', json=data)
 
     if response.status_code == 200:
         return jsonify({"msg": "Registro de salidas realizado con éxito"}), 200
