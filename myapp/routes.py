@@ -180,7 +180,7 @@ def update_user(user_id):
 
 @main.route('/users', methods=['GET'])
 def get_users():
-    users = User.get_all()
+    users = User.query.all()
     return jsonify([user.to_dict() for user in users]), 200
 
 @main.route('/users/<int:user_id>', methods=['GET'])
