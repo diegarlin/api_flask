@@ -79,7 +79,7 @@ def login():
 
             # Creamos el token con el cual podrán mandar llamadas a la api
             access_token = create_access_token(identity=user.username)
-            return jsonify(access_token=access_token), 200
+            return jsonify(access_token=access_token, admin=user.admin), 200
         else:
             return jsonify({"msg": "La contraseña no es correcta"}), 401
     else:
