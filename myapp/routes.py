@@ -125,7 +125,11 @@ def comprobar_sala():
 @jwt_required()
 def registrar_salidas():
     logging.info('Iniciando el registro de salidas')
+    current_user = get_jwt_identity()
 
+    if not current_user.is_admin:
+            return jsonify({"msg": "No eres administrador"}), 403
+        
     response = requests.get('https://api-mongo-9eqi.onrender.com/habitaciones/cerrar_entradas')
     logging.info('Respuesta de la API: %s', response.text)
 
@@ -135,3 +139,30 @@ def registrar_salidas():
     else:
         logging.error('Error al registrar salidas, código de estado: %s', response.status_code)
         return jsonify({"msg": "Error al registrar salidas"}), 500
+    
+@main.route('/send_email', methods=['POST'])
+@jwt_required()
+def send_email():
+    
+    if not request.is_json:
+        return jsonify({"msg": "No hay JSON"}), 400
+
+    subject = request.json.get('subject', None)
+    body = request.json.get('body', None)
+    
+    current_user = get_jwt_identity()
+
+    if not current_user.is_admin:
+            return jsonify({"msg": "No eres administrador"}), 403
+        
+    if not subject or not body:
+        return jsonify({"msg": "Debe haber asunto y mensaje"}), 400
+
+
+    msg = Message(subject,
+                  sender="shar3d.confirmaciones@gmail.com",
+                  recipients=[user.email for user in User.query.all()])  # Asume que tienes un modelo de usuario con un campo de correo electrónico
+    msg.body = body
+    mail.send(msg)
+
+    return jsonify({"msg": "Mensaje enviado"}), 200
