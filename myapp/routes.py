@@ -124,20 +124,13 @@ def comprobar_sala():
 @main.route('/cerrar_entradas', methods=['GET'])
 @jwt_required()
 def registrar_salidas():
-    logging.info('Iniciando el registro de salidas')
-    current_user = get_jwt_identity()
-
-    if not current_user.is_admin:
-            return jsonify({"msg": "No eres administrador"}), 403
+    
         
     response = requests.get('https://api-mongo-9eqi.onrender.com/habitaciones/cerrar_entradas')
-    logging.info('Respuesta de la API: %s', response.text)
 
     if response.status_code == 200:
-        logging.info('Registro de salidas realizado con éxito')
         return jsonify({"msg": "Registro de salidas realizado con éxito"}), 200
     else:
-        logging.error('Error al registrar salidas, código de estado: %s', response.status_code)
         return jsonify({"msg": "Error al registrar salidas"}), 500
     
 @main.route('/send_email', methods=['POST'])
@@ -150,10 +143,6 @@ def send_email():
     subject = request.json.get('subject', None)
     body = request.json.get('body', None)
     
-    current_user = get_jwt_identity()
-
-    if not current_user.is_admin:
-            return jsonify({"msg": "No eres administrador"}), 403
         
     if not subject or not body:
         return jsonify({"msg": "Debe haber asunto y mensaje"}), 400
