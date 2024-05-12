@@ -16,3 +16,14 @@ class User(db.Model):
             if hasattr(self, field):
                 setattr(self, field, value)
         db.session.commit()
+        
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'admin': self.admin,
+            'deviceID': self.deviceID,
+            'profesor': self.profesor,
+            'despacho': self.despacho
+        }

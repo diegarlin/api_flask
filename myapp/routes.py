@@ -149,7 +149,7 @@ def send_email():
     
     current_user = User.query.filter_by(username=current_username).first()
     if current_user.admin == False:
-        return jsonify({" No tienes permisos para realizar esta acción"}), 401
+        return jsonify({"error":"No tienes permisos para realizar esta acción"}), 401
     
     if not subject or not body:
         return jsonify({"msg": "Debe haber asunto y mensaje"}), 400
@@ -170,7 +170,7 @@ def update_user(user_id):
     current_username = get_jwt_identity()
     current_user = User.query.filter_by(username=current_username).first()
     if current_user.admin == False:
-        return jsonify({" No tienes permisos para realizar esta acción"}), 401
+        return jsonify({"error":"No tienes permisos para realizar esta acción"}), 401
     
     user = User.query.get(user_id)
     if not user:
