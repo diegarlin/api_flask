@@ -120,11 +120,11 @@ def comprobar_sala():
 
     return jsonify({"msg": "Comprobación de sala realizada"}), 200
 
-@main.route('/registrar_salidas', methods=['POST'])
+@main.route('/cerrar_entradas', methods=['POST'])
 @jwt_required()
 def registrar_salidas():
     data = request.get_json()
-    response = requests.post('https://api-mongo-9eqi.onrender.com/habitaciones/registrar_salidas', json=data)
+    response = requests.post('https://api-mongo-9eqi.onrender.com/habitaciones/cerrar_entradas', json=data)
 
     if response.status_code == 200:
         return jsonify({"msg": "Registro de salidas realizado con éxito"}), 200
