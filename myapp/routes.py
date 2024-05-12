@@ -126,10 +126,7 @@ def comprobar_sala():
 def registrar_salidas():
     logging.info('Iniciando el registro de salidas')
 
-    data = request.get_json()
-    logging.info('Datos recibidos: %s', data)
-
-    response = requests.get('https://api-mongo-9eqi.onrender.com/habitaciones/cerrar_entradas', json=data)
+    response = requests.get('https://api-mongo-9eqi.onrender.com/habitaciones/cerrar_entradas')
     logging.info('Respuesta de la API: %s', response.text)
 
     if response.status_code == 200:
