@@ -6,6 +6,7 @@ from .models import User, db
 import re
 from flask_mail import Message
 from .extensions import mail
+import requests
 
 main = Blueprint('main', __name__)
 
@@ -118,3 +119,14 @@ def comprobar_sala():
                 mail.send(msg)
 
     return jsonify({"msg": "Comprobación de sala realizada"}), 200
+
+@main.route('/registrar_salidas', methods=['POST'])
+@jwt_required()
+def registrar_salidas():
+    data = request.get_json()
+    response = requests.post('https://api-mongo-9eqi.onrender.com/registrar_salidas', json=data)
+
+    if response.status_code == 200:
+        return jsonify({"msg": "Registro de salidas realizado con éxito"}), 200
+    else:
+        return jsonify({"msg": "Error al registrar salidas"}), 500
