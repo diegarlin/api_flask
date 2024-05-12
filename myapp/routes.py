@@ -162,3 +162,39 @@ def send_email():
     mail.send(msg)
 
     return jsonify({"msg": "Mensaje enviado"}), 200
+
+@main.route('/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
+def update_user(user_id):
+    
+    current_username = get_jwt_identity()
+    current_user = User.query.filter_by(username=current_username).first()
+    if current_user.admin == False:
+        return jsonify({" No tienes permisos para realizar esta acción"}), 401
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    user.update(request.json)
+    return jsonify(user.to_dict()), 200
+
+@main.route('/users', methods=['GET'])
+def get_users():
+    users = User.get_all()
+    return jsonify([user.to_dict() for user in users]), 200
+
+@main.route('/users/<int:user_id>', methods=['GET'])
+@jwt_required()
+def update_user(user_id):
+    
+    current_username = get_jwt_identity()
+    
+    current_user = User.query.filter_by(username=current_username).first()
+    if current_user.admin == False:
+        return jsonify({" No tienes permisos para realizar esta acción"}), 401
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    return jsonify(user.to_dict()), 200

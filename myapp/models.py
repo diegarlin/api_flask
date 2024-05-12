@@ -10,3 +10,9 @@ class User(db.Model):
     deviceID = db.Column(db.String(120), nullable=False)
     profesor = db.Column(db.Boolean, nullable=True, default=None)
     despacho = db.Column(db.String(10), nullable=True, default=None)
+    
+    def update(self, changes):
+        for field, value in changes.items():
+            if hasattr(self, field):
+                setattr(self, field, value)
+        db.session.commit()
