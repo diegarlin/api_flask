@@ -179,6 +179,7 @@ def update_user(user_id):
     return jsonify(user.to_dict()), 200
 
 @main.route('/users', methods=['GET'])
+@jwt_required()
 def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users]), 200
