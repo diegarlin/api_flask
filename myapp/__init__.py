@@ -12,12 +12,13 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600
     app.config['BCRYPT_LOG_ROUNDS'] = 12
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = 'shar3d.confirmaciones@gmail.com'  # Reemplaza con tu correo
-    app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS')  # Reemplaza con tu contraseña
+    app.config['MAIL_USERNAME'] = 'shar3d.confirmaciones@gmail.com' 
+    app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS')  
     
     mail.init_app(app)
     db.init_app(app)
